@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>web performance</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript">
+        // 头部资源下载完成  ≈  白屏时间
+        window.onload = init;
+        function init() {
+            var dtime = document.getElementById('domComplete-time');
+            var wtime = document.getElementById('white-time');
+            var dnstime = document.getElementById('dns-time');
+            var entry = document.getElementById('entry');
+
+            var timeObj = performance.timing;
+
+            var pageLoadTime = timeObj.loadEventStart - timeObj.navigationStart;
+            var dns = timeObj.domainLookupEnd - timeObj.domainLookupStart;
+            var tcp = timeObj.connectEnd - timeObj.connectStart;
+            var request = timeObj.requestEnd - timeObj.requestStart;
+            var response = timeObj.responseEnd - timeObj.responseStart;
+            var white = timeObj.responseStart - timeObj.navigationStart;
+            var domReady = timeObj.domContentLoadedEventEnd - timeObj.navigationStart;
+            var onload = timeObj.loadEventEnd - timeObj.navigationStart;
+
+            dtime.innerHTML = (domReady/1000).toFixed(2)+'s';
+            wtime.innerHTML = (white/1000).toFixed(2)+'s';
+            dnstime.innerHTML = (dns/1000).toFixed(2)+'s';
+
+            var entries = performance.getEntries();
+            var links = entries.filter(function(val) {
+                return val.initiatorType == 'link';
+            });
+            var scripts = entries.filter(function(val) {
+                return val.initiatorType == 'script';
+            });
+            var imgs = entries.filter(function(val) {
+                return val.initiatorType == 'img';
+            });
+            entry.innerHTML = 'js请求个数：'+scripts.length+'<br>css请求个数：'+links.length+'<br>image请求个数：'+imgs.length;
+        }
+    </script>
+</head>
+<body>
+    <p>首屏时间：<span id="domComplete-time"></span></p>
+    <p>白屏时间：<span id='white-time'></span></p>
+    <p>DNS查询时间：<span id="dns-time"></span></p>
+    <p id="entry"></p>
+    <img src="IMG_1934.jpg">
+    <script type="text/javascript" src="test.js"></script>
+</body>
+</html>
